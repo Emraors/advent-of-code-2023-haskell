@@ -1,0 +1,4 @@
+cradle:
+  stack:
+    - path: "./day01"
+      component: "Emraors:lib"
