@@ -56,6 +56,9 @@ isValid totalCubes = M.foldrWithKey check True
   where
     check key val acc = acc && (M.findWithDefault 0 key totalCubes > val)
 
+isGameValid :: TotalCubes -> Game -> Bool
+isGameValid totalCube (Game _ cubes) = Prelude.all (isValid totalCube) cubes
+
 -- | TESTS
 tests :: IO ()
 tests = do
@@ -63,6 +66,8 @@ tests = do
   testParseRevealedCube
   testParseRevealedCubes
   testParseGame
+  testIsValid
+  testIsGameValid
 
 testPairParser :: IO ()
 testPairParser = hspec $ do
@@ -123,4 +128,28 @@ testIsValid = hspec $ do
         `shouldBe` True
     it "returns False for invalid cubes" $ do
       isValid initTotalCubes (M.fromList [(Green, 20), (Red, 2), (Blue, 4)])
+        `shouldBe` False
+
+testIsGameValid :: IO ()
+testIsGameValid = hspec $ do
+  describe "isGameValid" $ do
+    it "returns True for valid game" $ do
+      isGameValid
+        initTotalCubes
+        ( Game
+            1
+            [ M.fromList [(Green, 1), (Red, 2), (Blue, 3)],
+              M.fromList [(Green, 1), (Red, 2), (Blue, 3)]
+            ]
+        )
+        `shouldBe` True
+    it "returns False for invalid game" $ do
+      isGameValid
+        initTotalCubes
+        ( Game
+            1
+            [ M.fromList [(Green, 20), (Red, 2), (Blue, 3)],
+              M.fromList [(Green, 1), (Red, 2), (Blue, 3)]
+            ]
+        )
         `shouldBe` False
