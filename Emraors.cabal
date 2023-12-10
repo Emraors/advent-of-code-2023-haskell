@@ -12,10 +12,12 @@ data-dir:       data
 library
   exposed-modules:
       Day01
+      Day02
   other-modules:
       Paths_Emraors
   hs-source-dirs:
       day01
+      day02
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unused-top-binds
   build-depends:
       QuickCheck

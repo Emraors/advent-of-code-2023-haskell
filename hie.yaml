@@ -2,3 +2,6 @@ cradle:
   stack:
     - path: "./day01"
       component: "Emraors:lib"
+
+    - path: "./day02"
+      component: "Emraors:lib"

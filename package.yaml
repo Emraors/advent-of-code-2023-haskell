@@ -29,3 +29,4 @@ ghc-options:
 library:
   source-dirs:
     - day01
+    - day02
