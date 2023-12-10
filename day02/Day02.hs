@@ -47,7 +47,10 @@ parseGame = do
   cubes <- parseRevealedCubes
   return $ Game n cubes
 
-isValid :: TotalCubes -> Game -> Bool
+initTotalCubes :: TotalCubes
+initTotalCubes = M.fromList [(Green, 13), (Red, 12), (Blue, 14)]
+
+isValid :: TotalCubes -> RevealedCube -> Bool
 isValid = undefined
 
 -- | TESTS
