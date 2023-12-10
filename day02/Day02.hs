@@ -4,7 +4,7 @@ module Day02 () where
 
 import Data.Attoparsec.Text
 import Data.Functor (($>))
-import Data.Map as M (Map, fromList)
+import Data.Map as M (Map, findWithDefault, foldrWithKey, fromList)
 import Data.Text as T
 import Test.Hspec
 
@@ -50,8 +50,11 @@ parseGame = do
 initTotalCubes :: TotalCubes
 initTotalCubes = M.fromList [(Green, 13), (Red, 12), (Blue, 14)]
 
+-- not yet sure if it should be gretter or equal or just greater
 isValid :: TotalCubes -> RevealedCube -> Bool
-isValid = undefined
+isValid totalCubes = M.foldrWithKey check True
+  where
+    check key val acc = acc && (M.findWithDefault 0 key totalCubes > val)
 
 -- | TESTS
 tests :: IO ()
@@ -111,3 +114,13 @@ testParseGame = hspec $ do
                 M.fromList [(Green, 1), (Red, 2), (Blue, 3)]
               ]
           )
+
+testIsValid :: IO ()
+testIsValid = hspec $ do
+  describe "isValid" $ do
+    it "returns True for valid cubes" $ do
+      isValid initTotalCubes (M.fromList [(Green, 1), (Red, 2), (Blue, 3)])
+        `shouldBe` True
+    it "returns False for invalid cubes" $ do
+      isValid initTotalCubes (M.fromList [(Green, 20), (Red, 2), (Blue, 4)])
+        `shouldBe` False
