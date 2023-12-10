@@ -5,7 +5,7 @@ module Day02 () where
 import Data.Attoparsec.Text
 import Data.Functor (($>))
 import Data.Map as M (Map, findWithDefault, foldrWithKey, fromList)
-import Data.Text as T
+import Data.Text as T (Text, lines, pack)
 import Test.Hspec
 
 data Color = Green | Red | Blue deriving (Show, Eq, Ord)
@@ -54,10 +54,30 @@ initTotalCubes = M.fromList [(Green, 13), (Red, 12), (Blue, 14)]
 isValid :: TotalCubes -> RevealedCube -> Bool
 isValid totalCubes = M.foldrWithKey check True
   where
-    check key val acc = acc && (M.findWithDefault 0 key totalCubes > val)
+    check key val acc = acc && (M.findWithDefault 0 key totalCubes >= val)
 
 isGameValid :: TotalCubes -> Game -> Bool
-isGameValid totalCube (Game _ cubes) = Prelude.all (isValid totalCube) cubes
+isGameValid totalCube (Game _ cubes) = all (isValid totalCube) cubes
+
+sumID :: [Game] -> Int
+sumID = sum . map (\(Game n _) -> n)
+
+parseInput :: Parser Game -> Text -> [Game]
+parseInput parser =
+  map
+    ( either error id
+        . parseOnly parser
+    )
+    . T.lines
+
+firstSolution :: IO ()
+firstSolution = do
+  input <- readFile "day02/day02.txt"
+  let games =
+        filter
+          (isGameValid initTotalCubes)
+          (parseInput parseGame (pack input))
+  print $ sumID games
 
 -- | TESTS
 tests :: IO ()
@@ -68,6 +88,7 @@ tests = do
   testParseGame
   testIsValid
   testIsGameValid
+  testSumID
 
 testPairParser :: IO ()
 testPairParser = hspec $ do
@@ -153,3 +174,21 @@ testIsGameValid = hspec $ do
             ]
         )
         `shouldBe` False
+
+testSumID :: IO ()
+testSumID = hspec $ do
+  describe "sumID" $ do
+    it "returns 2 for 2 games" $ do
+      sumID
+        [ Game
+            1
+            [ M.fromList [(Green, 1), (Red, 2), (Blue, 3)],
+              M.fromList [(Green, 1), (Red, 2), (Blue, 3)]
+            ],
+          Game
+            1
+            [ M.fromList [(Green, 1), (Red, 2), (Blue, 3)],
+              M.fromList [(Green, 1), (Red, 2), (Blue, 3)]
+            ]
+        ]
+        `shouldBe` 2
