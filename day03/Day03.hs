@@ -13,7 +13,11 @@ import Test.Hspec (describe, hspec, it, shouldBe)
 
 type Coordinate = (Int, Int)
 
-data Value = Symbol Char | Digit Char | Dot deriving (Show, Eq)
+data Value
+  = Symbol Char
+  | Digit Char
+  | Dot
+  deriving (Show, Eq)
 
 type Matrix = M.Map Coordinate Value
 
@@ -43,10 +47,21 @@ testRowParser = hspec $
       parseOnly
         rowParser
         (pack "1a.3%")
-        `shouldBe` Right [Digit '1', Symbol 'a', Dot, Digit '3', Symbol '%']
+        `shouldBe` Right
+          [ Digit '1',
+            Symbol 'a',
+            Dot,
+            Digit '3',
+            Symbol '%'
+          ]
 
 parseMatrix :: Text -> [[Value]]
-parseMatrix text = map (either error id . parseOnly rowParser) (T.lines text)
+parseMatrix text =
+  map
+    ( either error id
+        . parseOnly rowParser
+    )
+    (T.lines text)
 
 testInput :: Text
 testInput =
@@ -58,9 +73,19 @@ testParseMatrix =
   hspec $
     describe "parseMatrix" $
       it "parses a matrix" $
-        parseMatrix (pack "1a.3%\n2..")
-          `shouldBe` [ [Digit '1', Symbol 'a', Dot, Digit '3', Symbol '%'],
-                       [Digit '2', Dot, Dot]
+        parseMatrix (pack "1a.3%\n2..%.")
+          `shouldBe` [ [ Digit '1',
+                         Symbol 'a',
+                         Dot,
+                         Digit '3',
+                         Symbol '%'
+                       ],
+                       [ Digit '2',
+                         Dot,
+                         Dot,
+                         Symbol '%',
+                         Dot
+                       ]
                      ]
 
 elementAt :: Matrix -> Coordinate -> Maybe MatrixElement
@@ -118,3 +143,6 @@ testListToMatrix =
             [Digit '2', Digit '4']
           ]
           `shouldBe` matrix
+
+extractDigits :: Matrix -> [MatrixElement] -> [Int]
+extractDigits = undefined
